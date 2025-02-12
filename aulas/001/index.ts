@@ -25,10 +25,9 @@ async function start() {
 	} else if (price >= SELL_PRICE && isOpened) {
 		console.log("Sell");
 		isOpened = false;
-	}else{
+	} else {
 		console.log("Waiting");
 	}
-		
 }
 
 setInterval(start, 3000);

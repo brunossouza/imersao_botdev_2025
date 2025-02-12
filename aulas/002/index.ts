@@ -25,14 +25,13 @@ onde:
 - RSI é o Índice de Força Relativa
 */
 
-
 // calculate media de Gain e Loss
 async function avarege(prices: number[], period: number, startIdx: number) {
-	let gain = 0; 
+	let gain = 0;
 	let loss = 0;
 
-	for (let i = 0; i < period && (i +startIdx) <prices.length ; i++) {
-		const diff = prices[i + startIdx] - prices[i +startIdx - 1];
+	for (let i = 0; i < period && i + startIdx < prices.length; i++) {
+		const diff = prices[i + startIdx] - prices[i + startIdx - 1];
 
 		if (diff > 0) {
 			gain += diff; // se o valor for positivo, é um ganho
@@ -50,13 +49,13 @@ async function avarege(prices: number[], period: number, startIdx: number) {
 // calculate RSI -- Índice de Força Relativa
 // vai ser utilizado media aritmetica exponencial (EMA) para calcular o RSI, o que torna o RSI mais sensível a mudanças de preço recentes do que a média simples.
 async function rsi(prices: number[], period: number) {
-	let avgGains = 0; 
+	let avgGains = 0;
 	let avgLoss = 0;
 
 	for (let i = 1; i < prices.length; i++) {
 		const avgs = await avarege(prices, period, i);
 
-		if(i === 1){
+		if (i === 1) {
 			avgGains = avgs.gain;
 			avgLoss = avgs.loss;
 			continue;
@@ -67,10 +66,9 @@ async function rsi(prices: number[], period: number) {
 	}
 
 	const rs = avgGains / avgLoss;
-	const rsi = 100 - (100 / (1 + rs));
+	const rsi = 100 - 100 / (1 + rs);
 	return rsi;
 }
-
 
 async function start() {
 	const { data } = await axios.get(
@@ -79,13 +77,12 @@ async function start() {
 	const candle = data[data.length - 1];
 	const lastPrice = Number.parseFloat(candle[4]);
 
-	const prices = data.map(c => Number.parseFloat(c[4]));
+	const prices = data.map((c) => Number.parseFloat(c[4]));
 
 	const rsiValue = await rsi(prices, PERIOD);
 
-
 	console.clear();
-	console.log(`Price: ${lastPrice}`);	
+	console.log(`Price: ${lastPrice}`);
 	console.log(`RSI: ${rsiValue}`);
 
 	if (rsiValue < 30 && !isOpened) {
